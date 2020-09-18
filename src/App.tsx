@@ -1,26 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react";
+import { createBlog } from "./graphql/mutations";
+import { Form } from "./Form";
+import { Blogs } from "./Blogs";
+import { useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { Mutation, MutationCreateBlogArgs } from './@types/graphql'
 
-function App() {
+export default function App() {
+  const [createBlogReq] = useMutation<Mutation, MutationCreateBlogArgs>(gql(createBlog))
+  const handleSubmit = (input: any) => {
+    createBlogReq({
+      variables: { input }
+    })
+      .then(({ data }) => {
+        if (data) {
+          const result = data.createBlog
+          console.log(result)
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ textAlign: "center" }}>
+      <Form
+        onSubmit={handleSubmit}
+      />
+      <Blogs />
     </div>
-  );
+  )
 }
-
-export default App;
